@@ -130,22 +130,16 @@ with tab3:
 
     raw_text = st.text_area("Paste your messy block text here:", height=200, placeholder="e.g., WO1995029451A11994-04-251995-11-02...")
 
-if raw_text:
+    if raw_text:
         # Remove header row if accidentally copied
         clean_text = raw_text.replace("Publication numberPriority datePublication dateAssigneeTitle", "")
 
-        # NEW REGEX: 
-        # 1. ([A-Z]{2}[A-Z0-9]*?) -> Captures the patent number
-        # 2. [\s\*]* -> Completely ignores any spaces, tabs, or asterisks in between
-        # 3. (\d{4}-\d{2}-\d{2}) -> Captures Date 1
-        # 4. \s* -> Ignores spaces/tabs
-        # 5. (\d{4}-\d{2}-\d{2}) -> Captures Date 2
+        # Regex: Looks for (Patent Number) then ignores spaces/asterisks then finds Date 1 and Date 2
         pattern = r'([A-Z]{2}[A-Z0-9]*?)[\s\*]*(\d{4}-\d{2}-\d{2})\s*(\d{4}-\d{2}-\d{2})'
         matches = re.finditer(pattern, clean_text)
 
         extracted_data = []
         for match in matches:
-            # We no longer need to strip asterisks out manually, the new regex leaves them behind!
             pub_num = match.group(1).strip()
             extracted_data.append({
                 "Publication number": pub_num,
@@ -169,7 +163,7 @@ if raw_text:
                 data=converted_data,
                 file_name="Converted_Patents.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                key="tab3_download"
+                key="tab3_excel_download"
             )
         else:
             st.error("❌ Could not find any valid patent numbers or dates in that text. Please check the formatting.")
